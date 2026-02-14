@@ -33,3 +33,7 @@ Thumbs.db
 .venv/
 
 .vscode/
+
+review.code.md
+
+review/

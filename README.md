@@ -15,7 +15,7 @@
 </p>
 
 ## Project Overview
-**GreatKart** presents PacificMart - a comprehensive Django-based e-commerce platform designed for modern online retail. This robust solution features complete payment integration, advanced user management, and cloud-based storage infrastructure. Built with scalability and security in mind, PacificMart leverages Django 5.2.6 with Python 3.12 to deliver a seamless shopping experience with multi-payment gateway support (bKash, Nagad, Cash on Delivery), real-time inventory management, and enterprise-grade deployment capabilities on Render.
+**GreatKard** presents PacificMart - a comprehensive Django-based e-commerce platform designed for modern online retail. This robust solution features complete payment integration, advanced user management, and cloud-based storage infrastructure. Built with scalability and security in mind, PacificMart leverages Django 5.2.6 with Python 3.12 to deliver a seamless shopping experience with multi-payment gateway support (bKash, Nagad, Cash on Delivery), real-time inventory management, and enterprise-grade deployment capabilities on Render.
 
 ### Technical Architecture
 The platform implements a sophisticated multi-app Django architecture with modular design principles:
