@@ -1,6 +1,5 @@
-Below is the corrected `README.md` file with proper Markdown formatting. All your original text is preserved; only the code fence for the project structure has been fixed (now using triple backticks consistently).
+# PacificMart E-Commerce Platform
 
-```markdown
 <!-- Badges -->
 <p align="center">
   <img alt="Django" src="https://img.shields.io/badge/Django-5.2.6-092E20?style=for-the-badge&logo=django" />
@@ -8,8 +7,6 @@ Below is the corrected `README.md` file with proper Markdown formatting. All you
   <img alt="Render" src="https://img.shields.io/badge/Deployed%20on-Render-1E293B?style=for-the-badge&logo=render" />
   <img alt="Cloudinary" src="https://img.shields.io/badge/Storage-Cloudinary-232F3E?style=for-the-badge&logo=cloudinary" />
 </p>
-
-# PacificMart E-Commerce Platform
 
 ## Project Overview
 Django-based e-commerce platform with payment integration, user management, and cloud storage. Built for modern web deployment with Render.
@@ -158,6 +155,181 @@ python tests/run_server.bat  # Windows
 python tests/run_server.ps1  # PowerShell
 ```
 
-## Deployment
+## Production Deployment
 
-Ready for Render deployment with automatic build and database provisioning.
+### Render Deployment
+1. **Repository Setup**: Code pushed to GitHub repository
+2. **Render Configuration**: `render.yaml` with database and service definitions
+3. **Environment Variables**: Production secrets configured in Render dashboard
+4. **Automated Build**: `build.sh` executes on each deployment
+5. **Database Provisioning**: PostgreSQL database automatically created and connected
+
+### Build Process
+The `build.sh` script handles:
+- **Dependency Installation**: Installs all Python requirements
+- **Migration Creation**: Generates database migrations
+- **Database Migration**: Applies schema changes
+- **Static File Collection**: Collects and optimizes static assets
+- **Health Checks**: Verifies database connectivity
+
+### Environment Configuration
+- **Development**: SQLite database, DEBUG=True, HTTP allowed
+- **Production**: PostgreSQL database, DEBUG=False, HTTPS enforced
+- **Security**: Automatic SSL redirects, secure cookies, CSRF protection
+
+## Configuration Files
+
+### Environment Variables (.env)
+```env
+# Core Django Settings
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=pacific-mart.onrender.com
+CSRF_TRUSTED_ORIGINS=https://pacific-mart.onrender.com
+
+# Database Configuration
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+
+# Email Configuration
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+EMAIL_USE_TLS=True
+```
+
+### Render Configuration (render.yaml)
+```yaml
+databases:
+  - name: thepacificmart-db
+    plan: free
+    databaseName: thepacificmart
+    user: thepacificmart
+
+services:
+  - type: web
+    plan: free
+    name: thepacificmart
+    runtime: python
+    buildCommand: './build.sh'
+    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application --timeout 30 --workers 1'
+    
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: thepacificmart-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "pacific-mart.onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://pacific-mart.onrender.com"
+```
+
+## API Documentation
+
+### User Authentication
+- **POST** `/accounts/register/`: User registration with email verification
+- **POST** `/accounts/login/`: User authentication with session creation
+- **GET** `/accounts/logout/`: User session termination
+- **GET** `/accounts/dashboard/`: User dashboard and profile management
+
+### E-Commerce Operations
+- **GET** `/store/`: Product listing with category filtering
+- **GET** `/store/product/<id>/`: Individual product details
+- **POST** `/cart/add_to_cart/<id>/`: Add items to shopping cart
+- **GET** `/cart/`: View and manage shopping cart
+- **POST** `/orders/place_order/`: Complete checkout and create order
+
+### Payment Processing
+- **GET** `/payments/bkash/`: bKash payment processing
+- **GET** `/payments/nagad/`: Nagad payment processing
+- **GET** `/payments/cod/`: Cash on delivery processing
+- **POST** `/cod/pay/<order_id>/`: Cash payment confirmation
+
+## Monitoring and Maintenance
+
+### Health Checks
+- **Database Connectivity**: Automated connection verification
+- **Static File Status**: Collection and compression verification
+- **Application Logs**: Build process logging and error tracking
+
+### Performance Monitoring
+- **Response Time**: Page load optimization
+- **Database Query**: Query performance tracking
+- **Static Delivery**: CDN performance via Cloudinary
+
+## Security Considerations
+
+### Implemented Security Measures
+- **Environment Variable Protection**: Sensitive data in environment, not code
+- **CSRF Protection**: All forms protected with CSRF tokens
+- **SQL Injection Prevention**: Django ORM parameterized queries
+- **XSS Protection**: Template auto-escaping and content security
+- **Session Security**: Secure cookies with proper configuration
+- **HTTPS Enforcement**: Automatic SSL redirect in production
+
+### Security Best Practices
+- **Regular Updates**: Dependencies kept up-to-date
+- **Input Validation**: Form validation and sanitization
+- **Access Control**: Role-based permissions and admin protection
+- **Audit Logging**: User action tracking and security events
+
+## Future Enhancements
+
+### Planned Improvements
+- **Advanced Search**: Full-text search with filtering and sorting
+- **Order Tracking**: Real-time order status updates
+- **Payment Analytics**: Payment method performance tracking
+- **Mobile Optimization**: Progressive Web App and mobile-specific features
+- **API Development**: RESTful API for mobile applications
+- **Performance Monitoring**: Application performance metrics
+- **Security Hardening**: Additional security layers and monitoring
+
+### Scalability Considerations
+- **Database Optimization**: Query optimization and indexing
+- **CDN Integration**: Enhanced static file delivery
+- **Load Balancing**: Multi-instance deployment support
+- **Caching Strategy**: Redis integration for session and data caching
+
+## Contributing Guidelines
+
+### Development Workflow
+1. **Fork Repository**: Create personal copy for development
+2. **Feature Branch**: Create branch for new features
+3. **Testing**: Comprehensive testing before deployment
+4. **Documentation**: Update documentation for changes
+5. **Pull Request**: Submit changes for review and merge
+
+### Code Standards
+- **PEP 8 Compliance**: Python code formatting and style
+- **Django Best Practices**: Framework conventions and patterns
+- **Security First**: Security considerations in all development
+- **Test Coverage**: Unit tests for all new features
+- **Documentation**: Clear documentation for complex functionality
+
+## Support and Maintenance
+
+### Troubleshooting
+- **Build Failures**: Check `build.sh` logs and dependency versions
+- **Database Issues**: Verify connection strings and migration status
+- **Static File Problems**: Check `collectstatic` output and permissions
+- **Payment Errors**: Review payment gateway credentials and API status
+
+### Regular Maintenance
+- **Dependency Updates**: Regular security and feature updates
+- **Database Backups**: Automated backup verification
+- **Log Rotation**: Manage application log files
+- **Performance Reviews**: Regular performance assessment and optimization
+
+---
+
+**PacificMart** - Modern e-commerce platform built with Django, designed for scalability and security.
