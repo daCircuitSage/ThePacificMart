@@ -16,19 +16,19 @@ SITE_ID = 1
 
 # ================= SECURITY =================
 SECRET_KEY = config('SECRET_KEY', default='unsafe-secret-key')
-# DEBUG = config('DEBUG', default=False, cast=bool)
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
+# DEBUG = True
 
 # ================= HOST & CSRF =================
 # ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',') if host.strip()]
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',') if origin.strip()]
-# CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000', 'http://127.0.0.1:8000/']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
 # Add default trusted origins for production
-if not DEBUG and not CSRF_TRUSTED_ORIGINS:
-    CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
+# if not DEBUG and not CSRF_TRUSTED_ORIGINS:
+#     CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
