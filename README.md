@@ -1,4 +1,10 @@
+
+ 
 # PacificMart E-Commerce Platform
+
+<p align="center">
+  <img src="assets/logo.png" alt="GreatKart Logo" width="200" />
+</p>
 
 <!-- Badges -->
 <p align="center">
@@ -9,7 +15,24 @@
 </p>
 
 ## Project Overview
-Django-based e-commerce platform with payment integration, user management, and cloud storage. Built for modern web deployment with Render.
+**GreatKart** presents PacificMart - a comprehensive Django-based e-commerce platform designed for modern online retail. This robust solution features complete payment integration, advanced user management, and cloud-based storage infrastructure. Built with scalability and security in mind, PacificMart leverages Django 5.2.6 with Python 3.12 to deliver a seamless shopping experience with multi-payment gateway support (bKash, Nagad, Cash on Delivery), real-time inventory management, and enterprise-grade deployment capabilities on Render.
+
+### Technical Architecture
+The platform implements a sophisticated multi-app Django architecture with modular design principles:
+
+- **User Management System**: Custom `Account` model extending Django's `AbstractUser` with email-based authentication, profile management, and role-based permissions
+- **Product Catalog**: Advanced product management with variations (colors/sizes), review ratings, and Cloudinary image storage
+- **Shopping Cart & Checkout**: Real-time cart functionality with session persistence and multi-step checkout process
+- **Payment Processing**: Integrated payment gateways supporting local Bangladeshi mobile payments (bKash, Nagad) and traditional cash on delivery
+- **Order Management**: Complete order lifecycle tracking with status updates and email notifications
+
+### Database Design
+The application features a well-structured relational database with proper foreign key relationships:
+- **User Accounts**: Extended user model with profile pictures, addresses, and contact information
+- **Product Management**: Products with categories, variations, reviews, and image galleries
+- **Cart System**: Session-based cart with user association and product variations
+- **Order Processing**: Orders with items, payment status, and delivery tracking
+- **Payment Integration**: Separate models for each payment gateway with transaction tracking
 
 ## Architecture
 - **Framework**: Django 5.2.6 with Python 3.12
