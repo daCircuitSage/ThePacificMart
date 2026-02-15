@@ -76,13 +76,13 @@ def register(request):
                 email_sent = False
 
             # Always redirect, even if email fails
-            return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
+            # return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
             # SECURE: Only proceed if email was sent
-            # if email_sent:
-            #     return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=True')
-            # else:
-            #     messages.error(request, 'Registration failed. Please try again or contact support.')
-            #     return redirect('register')
+            if email_sent:
+                return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=True')
+            else:
+                messages.error(request, 'Registration failed. Please try again or contact support.')
+                return redirect('register')
     else:
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
