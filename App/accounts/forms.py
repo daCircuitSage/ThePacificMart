@@ -1,5 +1,6 @@
 from django import forms
 from .models import Account, UserProfile
+from factors_Ecom.validators import validate_bangladeshi_phone_number
 
 
 class RegistrationForm(forms.ModelForm):
@@ -14,11 +15,20 @@ class RegistrationForm(forms.ModelForm):
         model = Account
         fields = ['first_name', 'last_name', 'email', 'phone_number']
     
+    def clean_phone_number(self):
+        # this is validating the user's mobile number so 
+        # that a user cannot pass direct string as mobile number
+        phone_number = self.cleaned_data.get('phone_number')
+        if phone_number:
+            validate_bangladeshi_phone_number(phone_number)
+        return phone_number
+    
+
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
-
+        
         if password != confirm_password:
             raise forms.ValidationError(
                 'Password does not match'
@@ -40,6 +50,15 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ('first_name','last_name','phone_number')
+
+    def clean_phone_number(self):
+        # this is validating the user's mobile number so 
+        # that a user cannot pass direct string as mobile number
+        phone_number = self.cleaned_data.get('phone_number')
+        if phone_number:
+            validate_bangladeshi_phone_number(phone_number)
+        return phone_number
+
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         for field in self.fields:

@@ -153,6 +153,14 @@ def edit_profile(request):
             profile_form.save()
             messages.success(request, 'Your profile has been updated.')
             return redirect('edit_profile')
+        else:
+            # Add error messages when forms are invalid
+            for field, errors in user_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
+            for field, errors in profile_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
     else:
         user_form = UserForm(instance=request.user)
         profile_form = UserProfileForm(instance=userprofile)
