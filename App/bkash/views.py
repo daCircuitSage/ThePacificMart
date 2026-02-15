@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.urls import reverse
+from factors_Ecom.validators import is_valid_bangladeshi_phone as bangladeshi_number
+
 
 def bkash_payment(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
@@ -18,8 +20,8 @@ def bkash_payment(request, order_number):
         bkash_number = request.POST.get('bkash_number')
         trx_id = request.POST.get('trx_id')
 
-        if not bkash_number or not trx_id:
-            messages.error(request, "Please provide both bKash number and Transaction ID.")
+        if not (bangladeshi_number(bkash_number)) or not trx_id:
+            messages.error(request, "Please provide both valid bKash number and Transaction ID.")
             return render(request, 'payments/bkash.html', {'order': order})
 
         payment = Payment.objects.create(

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib import messages
 import datetime
 
 from .models import Order, OrderProduct, Payment
@@ -69,10 +70,13 @@ def place_order(request, total=0, quantity=0):
                 'grand_total': grand_total,
                 'delivery_area': delivery_area,
             }
+             
             return render(request, 'orders/payments.html', context)
         else:
+            # Add form errors as messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.replace('_', ' ').title()}: {error}")
             return redirect('checkout')
     else:
         return redirect('checkout')
-        
-
