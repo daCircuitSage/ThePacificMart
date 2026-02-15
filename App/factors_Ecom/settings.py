@@ -101,17 +101,17 @@ DATABASES = {
     'default': dj_database_url.parse(
         config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
         conn_max_age=600,
-        ssl_require=True  # Always require SSL for production databases
+        # ssl_require=True  # Always require SSL for production databases
     )
 }
 
 # Additional database options for PostgreSQL
-if 'postgresql' in config('DATABASE_URL', default=''):
-    DATABASES['default'].update({
-        'OPTIONS': {
-            'sslmode': 'require',
-        }
-    })
+# if 'postgresql' in config('DATABASE_URL', default=''):
+#     DATABASES['default'].update({
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         }
+#     })
 
 # ================= AUTH =================
 AUTH_USER_MODEL = 'accounts.Account'
