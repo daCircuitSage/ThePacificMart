@@ -15,6 +15,9 @@ from django.contrib.auth.tokens import default_token_generator
 import requests
 import logging
 from django.conf import settings
+from django.utils.http import url_has_allowed_host_and_scheme
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -43,12 +46,12 @@ def register(request):
             # Verification email
             email_sent = False
             try:
-                current_site = get_current_site(request)
+                # current_site = get_current_site(request)
                 mail_subject = 'Please activate your account'
                 message = render_to_string('accounts/account_verification_email.html', {
                     'user': user,
                     # 'domain': current_site.domain,
-                    'domain': request.get_host(),  # This gives 127.0.0.1:8000 or your domain
+                    'domain': request.get_host(),  #current_site This gives 127.0.0.1:8000 or your domain
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user)
                 })
@@ -73,7 +76,13 @@ def register(request):
                 email_sent = False
 
             # Always redirect, even if email fails
-            return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
+            # return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=' + str(email_sent))
+            # SECURE: Only proceed if email was sent
+            if email_sent:
+                return redirect('/accounts/login/?command=verification&email=' + email + '&email_sent=True')
+            else:
+                messages.error(request, 'Registration failed. Please try again or contact support.')
+                return redirect('register')
     else:
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -91,8 +100,15 @@ def login(request):
                 auth.login(request, user)
                 merge_carts(user, session_key_before)
 
-                url = request.GET.get('next') or 'dashboard'
-                messages.success(request, 'You are now logged in.')
+                # url = request.GET.get('next') or 'dashboard'
+                # messages.success(request, 'You are now logged in.')
+                # return redirect(url)
+                # SECURE CODE:
+                next_url = request.GET.get('next')
+                if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                    url = next_url
+                else:
+                    url = 'dashboard'
                 return redirect(url)
             else:
                 messages.error(request, 'Please verify your email address before logging in.')
@@ -168,7 +184,8 @@ def change_password(request):
 
 @login_required(login_url='login')
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, order_number=order_id)
+    # order = get_object_or_404(Order, order_number=order_id) # VULNERABLE CODE: any user can access any order
+    order = get_object_or_404(Order, order_number=order_id, user=request.user) # SECURE CODE: only the owner can access their order
     order_items = OrderProduct.objects.filter(order=order)
     subtotal = sum(item.product_price * item.quantity for item in order_items)
     return render(request, 'accounts/order_detail.html', {
