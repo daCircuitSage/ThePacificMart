@@ -197,4 +197,9 @@ MESSAGE_TAGS = {messages.ERROR: "danger"}
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ================= URL SLASH =================
-APPEND_SLASH = True
+APPEND_SLASH = True # fixed // problem
+
+# couldn't login so added this
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

@@ -218,11 +218,12 @@ def forgotpassword(request):
         email = request.POST['email']
         if Account.objects.filter(email=email).exists():
             user = Account.objects.get(email=email)
-            current_site = get_current_site(request)
+            # current_site = get_current_site(request)
             mail_subject = 'Reset your password'
             message = render_to_string('accounts/reset_password_email.html', {
                 'user': user,
-                'domain': current_site,
+                # 'domain': current_site,
+                'domain': request.get_host(), # fix: get the domain from the request
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user)
             })
