@@ -119,6 +119,16 @@ cp .env.example .env
 clear && docker-compose down && docker-compose up --build
 ```
 
+4. Create superuser (optional):
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+5. Start Shell
+```bash
+docker-compose exec web python manage.py shell
+```
+
 ## Database
 
 - **Development:** SQLite (file-based, no setup required)
