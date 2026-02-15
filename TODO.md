@@ -8,10 +8,11 @@
   - Test order access permissions
   - Add unit tests for authorization
 
-- [ ] **FIX Open Redirect Vulnerability** - `accounts/views.py:94`
-  - Implement `is_safe_url()` validation for 'next' parameter
-  - Add URL validation middleware
-  - Test redirect security
+- [x] **FIX Open Redirect Vulnerability** - `accounts/views.py:108`
+  - ✅ Implemented `url_has_allowed_host_and_scheme()` validation for 'next' parameter
+  - ✅ Fixed Django 5.2 compatibility (replaced deprecated `is_safe_url`)
+  - ✅ Added HTTPS requirement in URL validation
+  - ✅ Test redirect security
 
 - [ ] **Add Input Validation** - Payment gateways
   - bKash number format validation: `^01[3-9]\d{8}$`
