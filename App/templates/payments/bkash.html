@@ -64,7 +64,9 @@
     <!-- Payment Form -->
     <form method="POST">
         {% csrf_token %}
-
+        
+        {% include "includes/alerts.html" %}
+        
         <div class="form-group">
             <label>Your bKash Number</label>
             <input type="text"

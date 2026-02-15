@@ -7,6 +7,7 @@ from cart.models import CartItems
 from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
+from factors_Ecom.validators import is_valid_bangladeshi_phone as bangladeshi_number
 
 
 def cod_payment(request, order_number):
@@ -21,7 +22,7 @@ def cod_payment(request, order_number):
         sender_number = request.POST.get('sender_number')
         transaction_id = request.POST.get('transaction_id')
 
-        if not payment_method or not sender_number or not transaction_id:
+        if not payment_method or not (bangladeshi_number(sender_number)) or not transaction_id:
             messages.error(request, "Please complete all payment details.")
             return redirect(request.path)
 
