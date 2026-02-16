@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 from category.models import Category
 from .models import Product, ReviewRating, ProductGallery
 from orders.models import OrderProduct
@@ -11,16 +13,15 @@ from cart.models import CartItems
 from cart.views import _cart_id
 
 
+@cache_page(60 * 15)  # Cache for 15 minutes
 def store(request, category_slug=None):
     category = None
 
-    products = Product.objects.filter(is_available=True)
+    products = Product.objects.filter(is_available=True).select_related('product_category').order_by('id')
 
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(product_category=category)
-
-    products = products.order_by('id')  
 
     paginator = Paginator(products, 3)  
     page = request.GET.get('page')
@@ -36,7 +37,7 @@ def store(request, category_slug=None):
 
 def product_detail(request, category_slug, product_slug):
     single_product = get_object_or_404(
-        Product,
+        Product.objects.select_related('product_category'),
         product_category__slug=category_slug,
         product_slug=product_slug,
         is_available=True
@@ -68,6 +69,7 @@ def product_detail(request, category_slug, product_slug):
     return render(request, 'store/product_detail.html', context)
 
 
+@cache_page(60 * 30)  # Cache for 30 minutes
 def search(request):
     keyword = request.GET.get('keyword', '').strip()
 
@@ -81,6 +83,7 @@ def search(request):
                 Q(product_name__icontains=keyword) |
                 Q(product_description__icontains=keyword)
             )
+            .select_related('product_category')
             .order_by('-created_at')
         )
         product_count = products.count()
