@@ -80,18 +80,33 @@ def _cart_id(request):
     return cart
 
 def add_cart(request, product_id):
-    current_user = request.user
-    product = Product.objects.get(id=product_id) 
+    print(f"DEBUG: add_cart called with product_id={product_id}")
+    print(f"DEBUG: request.method={request.method}")
+    print(f"DEBUG: POST data={request.POST}")
     
+    current_user = request.user
+    try:
+        product = Product.objects.get(id=product_id) 
+        print(f"DEBUG: Product found: {product.product_name}")
+    except Product.DoesNotExist:
+        print(f"DEBUG: Product with id {product_id} does not exist")
+        return redirect('cart')
+    
+    # Get quantity from form, default to 1 if not provided
+    quantity = int(request.POST.get('quantity', 1))
+    print(f"DEBUG: Quantity={quantity}")
     
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
+        print(f"DEBUG: Existing cart found: {cart.cart_id}")
     except Cart.DoesNotExist:
         cart = Cart.objects.create(cart_id=_cart_id(request))
+        print(f"DEBUG: New cart created: {cart.cart_id}")
     cart.save()
     
     # If the user is authenticated
     if current_user.is_authenticated:
+        print(f"DEBUG: User is authenticated: {current_user.username}")
         product_variation = []
         if request.method == 'POST':
             for item in request.POST:
@@ -101,11 +116,13 @@ def add_cart(request, product_id):
                 try:
                     variation = Variation.objects.get(product=product, variation_category__iexact=key, variation_value__iexact=value)
                     product_variation.append(variation)
+                    print(f"DEBUG: Found variation: {key}={value}")
                 except:
                     pass
 
-
         is_cart_item_exists = CartItems.objects.filter(product=product, user=current_user, cart=cart).exists()
+        print(f"DEBUG: Cart item exists: {is_cart_item_exists}")
+        
         if is_cart_item_exists:
             cart_item = CartItems.objects.filter(product=product, user=current_user, cart=cart)
             ex_var_list = []
@@ -126,22 +143,24 @@ def add_cart(request, product_id):
                     # Found matching item, increase quantity
                     item_id = id[i]
                     item = CartItems.objects.get(product=product, id=item_id)
-                    item.quantity += 1
+                    item.quantity += quantity
                     item.save()
+                    print(f"DEBUG: Updated existing item quantity to {item.quantity}")
                     found_matching_item = True
                     break
 
             if not found_matching_item:
                 # Create new item with different variations
-                item = CartItems.objects.create(product=product, quantity=1, user=current_user, cart=cart)
+                item = CartItems.objects.create(product=product, quantity=quantity, user=current_user, cart=cart)
                 if len(product_variation) > 0:
                     item.variations.clear()
                     item.variations.add(*product_variation)
                 item.save()
+                print(f"DEBUG: Created new cart item with quantity {quantity}")
         else:
             cart_item = CartItems.objects.create(
                 product = product,
-                quantity = 1,
+                quantity = quantity,
                 user = current_user,
                 cart = cart,
             )
@@ -149,9 +168,12 @@ def add_cart(request, product_id):
                 cart_item.variations.clear()
                 cart_item.variations.add(*product_variation)
             cart_item.save()
+            print(f"DEBUG: Created first cart item with quantity {quantity}")
+        print(f"DEBUG: Redirecting to cart")
         return redirect('cart')
-    # If the user is not authenticated
+    # If user is not authenticated
     else:
+        print(f"DEBUG: User is not authenticated")
         product_variation = []
         if request.method == 'POST':
             for item in request.POST:
@@ -161,10 +183,13 @@ def add_cart(request, product_id):
                 try:
                     variation = Variation.objects.get(product=product, variation_category__iexact=key, variation_value__iexact=value)
                     product_variation.append(variation)
+                    print(f"DEBUG: Found variation: {key}={value}")
                 except:
                     pass
 
         is_cart_item_exists = CartItems.objects.filter(product=product, cart=cart).exists()
+        print(f"DEBUG: Cart item exists: {is_cart_item_exists}")
+        
         if is_cart_item_exists:
             cart_item = CartItems.objects.filter(product=product, cart=cart)
             # existing_variations -> database
@@ -177,8 +202,6 @@ def add_cart(request, product_id):
                 ex_var_list.append(list(existing_variation))
                 id.append(item.id)
 
-            print(ex_var_list)
-
             # Check for matching variations
             found_matching_item = False
             for i, existing_variations in enumerate(ex_var_list):
@@ -190,28 +213,32 @@ def add_cart(request, product_id):
                     # Found matching item, increase quantity
                     item_id = id[i]
                     item = CartItems.objects.get(product=product, id=item_id)
-                    item.quantity += 1
+                    item.quantity += quantity
                     item.save()
+                    print(f"DEBUG: Updated existing item quantity to {item.quantity}")
                     found_matching_item = True
                     break
 
             if not found_matching_item:
                 # Create new item with different variations
-                item = CartItems.objects.create(product=product, quantity=1, cart=cart)
+                item = CartItems.objects.create(product=product, quantity=quantity, cart=cart)
                 if len(product_variation) > 0:
                     item.variations.clear()
                     item.variations.add(*product_variation)
                 item.save()
+                print(f"DEBUG: Created new cart item with quantity {quantity}")
         else:
             cart_item = CartItems.objects.create(
                 product = product,
-                quantity = 1,
+                quantity = quantity,
                 cart = cart,
             )
             if len(product_variation) > 0:
                 cart_item.variations.clear()
                 cart_item.variations.add(*product_variation)
             cart_item.save()
+            print(f"DEBUG: Created first cart item with quantity {quantity}")
+        print(f"DEBUG: Redirecting to cart")
         return redirect('cart')
 
 

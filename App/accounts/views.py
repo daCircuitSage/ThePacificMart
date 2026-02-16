@@ -129,17 +129,42 @@ def logout(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    # Get all orders with optimized queries
+    orders = Order.objects.filter(user=request.user, is_ordered=True)\
+        .select_related('payment', 'user')\
+        .prefetch_related('orderproduct_set__product', 'orderproduct_set__variations')\
+        .order_by('-created_at')
+    
     orders_count = orders.count()
+    
+    # Calculate order statistics
+    shipped_orders_count = orders.filter(status__in=['Shipped', 'Delivered']).count()
+    pending_orders_count = orders.filter(status='Verifying Payment').count()
+    
+    # Get recent orders (last 5)
+    recent_orders = orders[:5]
+    
+    # Get cart count
+    from cart.models import CartItems
+    cart_count = CartItems.objects.filter(user=request.user, is_active=True).count()
+    
     userprofile = get_object_or_404(UserProfile, user=request.user)
+    
     return render(request, 'accounts/dashboard.html', {
         'orders_count': orders_count,
+        'shipped_orders_count': shipped_orders_count,
+        'pending_orders_count': pending_orders_count,
+        'recent_orders': recent_orders,
+        'cart_count': cart_count,
         'userprofile': userprofile
     })
 
 @login_required(login_url='login')
 def my_orders(request):
-    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    orders = Order.objects.filter(user=request.user, is_ordered=True)\
+        .select_related('payment', 'user')\
+        .prefetch_related('orderproduct_set__product', 'orderproduct_set__variations')\
+        .order_by('-created_at')
     return render(request, 'accounts/my_orders.html', {'orders': orders})
 
 @login_required(login_url='login')

@@ -88,6 +88,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'category.context_processors.menu_links',
                 'cart.context_processors.counter',
+                'accounts.context_processors.user_profile',
             ],
         },
     },
@@ -222,3 +223,5 @@ APPEND_SLASH = True # fixed // problem
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# ================= END =================
