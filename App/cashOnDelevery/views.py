@@ -71,19 +71,16 @@ def cod_payment(request, order_number):
 
 def cod_order_complete(request):
     order_number = request.GET.get('order_number')
-
-    order = get_object_or_404(
-        Order,
-        order_number=order_number,
-        is_ordered=True
-    )
-
+    order = get_object_or_404(Order, order_number=order_number, is_ordered=True)
     order_products = OrderProduct.objects.filter(order=order)
+
+    subtotal = 0
+    for item in order_products:
+        subtotal += item.product_price * item.quantity
 
     context = {
         'order': order,
         'order_products': order_products,
-        'payment_method': 'Cash on Delivery',
+        'subtotal': subtotal
     }
-
     return render(request, 'orders/order_complete.html', context)

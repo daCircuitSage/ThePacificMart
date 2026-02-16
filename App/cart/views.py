@@ -115,15 +115,24 @@ def add_cart(request, product_id):
                 ex_var_list.append(list(existing_variation))
                 id.append(item.id)
 
-            if product_variation in ex_var_list:
-                # increase the cart item quantity
-                index = ex_var_list.index(product_variation)
-                item_id = id[index]
-                item = CartItems.objects.get(product=product, id=item_id)
-                item.quantity += 1
-                item.save()
+            # Check for matching variations
+            found_matching_item = False
+            for i, existing_variations in enumerate(ex_var_list):
+                # Compare variation IDs instead of objects
+                existing_ids = sorted([v.id for v in existing_variations])
+                current_ids = sorted([v.id for v in product_variation]) if product_variation else []
+                
+                if existing_ids == current_ids:
+                    # Found matching item, increase quantity
+                    item_id = id[i]
+                    item = CartItems.objects.get(product=product, id=item_id)
+                    item.quantity += 1
+                    item.save()
+                    found_matching_item = True
+                    break
 
-            else:
+            if not found_matching_item:
+                # Create new item with different variations
                 item = CartItems.objects.create(product=product, quantity=1, user=current_user, cart=cart)
                 if len(product_variation) > 0:
                     item.variations.clear()
@@ -170,15 +179,24 @@ def add_cart(request, product_id):
 
             print(ex_var_list)
 
-            if product_variation in ex_var_list:
-                # increase the cart item quantity
-                index = ex_var_list.index(product_variation)
-                item_id = id[index]
-                item = CartItems.objects.get(product=product, id=item_id)
-                item.quantity += 1
-                item.save()
+            # Check for matching variations
+            found_matching_item = False
+            for i, existing_variations in enumerate(ex_var_list):
+                # Compare variation IDs instead of objects
+                existing_ids = sorted([v.id for v in existing_variations])
+                current_ids = sorted([v.id for v in product_variation]) if product_variation else []
+                
+                if existing_ids == current_ids:
+                    # Found matching item, increase quantity
+                    item_id = id[i]
+                    item = CartItems.objects.get(product=product, id=item_id)
+                    item.quantity += 1
+                    item.save()
+                    found_matching_item = True
+                    break
 
-            else:
+            if not found_matching_item:
+                # Create new item with different variations
                 item = CartItems.objects.create(product=product, quantity=1, cart=cart)
                 if len(product_variation) > 0:
                     item.variations.clear()
