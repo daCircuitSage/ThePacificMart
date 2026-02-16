@@ -13,7 +13,7 @@ def place_order(request, total=0, quantity=0):
     current_user = request.user
 
     # Check if user has items in cart
-    cart_items = CartItems.objects.filter(user=current_user, is_active=True)
+    cart_items = CartItems.objects.filter(user=current_user, is_active=True).select_related('product').prefetch_related('variations')
     if not cart_items.exists():
         return redirect('store')
 

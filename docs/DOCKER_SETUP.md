@@ -52,7 +52,7 @@ docker-compose down
 
 ### View logs
 ```bash
-docker-compose logs -f web
+docker-compose logs -f 
 ```
 
 ### Run Django commands
@@ -93,7 +93,7 @@ CSRF_TRUSTED_ORIGINS=http://localhost:8001,http://127.0.0.1:8001
 # Cloudinary (Required)
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARwebY_API_SECRET=your-api-secret
 
 # Database (Optional - defaults to SQLite)
 DATABASE_URL=sqlite:///db.sqlite3

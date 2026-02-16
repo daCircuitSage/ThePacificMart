@@ -136,6 +136,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'factors_Ecom' / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Static file caching settings
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MAX_AGE = 31536000  # 1 year for production
+WHITENOISE_IMMUTABLE_FILE_TEST = r'\.[0-9a-f]{8,}\.'
+
 # ================= MEDIA (Cloudinary) =================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # Required for development fallback
@@ -152,6 +158,19 @@ cloudinary.config(
     api_key=config('CLOUDINARY_API_KEY'),
     api_secret=config('CLOUDINARY_API_SECRET'),
 )
+
+# ================= CACHING =================
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5 minutes default
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    }
+}
 
 # ================= SESSION =================
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
