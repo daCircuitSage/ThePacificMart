@@ -165,6 +165,7 @@
 
 <section class="pd-wrapper">
   <div class="container">
+    {% include "includes/alerts.html" %}
 
     <!-- PRODUCT CARD -->
     <div class="pd-card">
@@ -274,8 +275,6 @@
             <a href="{% url 'login' %}">Login now</a>
           </p>
         {% endif %}
-
-        {% include "includes/alerts.html" %}
       </form>
 
       <h4 class="mt-4">Customer Reviews</h4>

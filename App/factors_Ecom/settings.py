@@ -172,17 +172,6 @@ CACHES = {
     }
 }
 
-# Cache middleware for per-view caching
-MIDDLEWARE += [
-    'django.middleware.cache.UpdateCacheMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
-]
-
-# Cache timeout settings
-CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 600  # 10 minutes
-CACHE_MIDDLEWARE_KEY_PREFIX = 'pacificmart'
-
 # ================= SESSION =================
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 1209600

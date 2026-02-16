@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
 from django.core.paginator import Paginator
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, never_cache
 from django.core.cache import cache
 from category.models import Category
 from .models import Product, ReviewRating, ProductGallery
@@ -35,6 +35,7 @@ def store(request, category_slug=None):
     return render(request, 'store/store.html', context)
 
 
+@never_cache
 def product_detail(request, category_slug, product_slug):
     single_product = get_object_or_404(
         Product.objects.select_related('product_category'),
@@ -50,19 +51,22 @@ def product_detail(request, category_slug, product_slug):
     if request.user.is_authenticated:
         
         try:
-            orderporduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists
+            orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
         except OrderProduct.DoesNotExist:
-            orderporduct = None
+            orderproduct = None
     else:
-        orderporduct = None
-    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+        orderproduct = None
+    reviews = ReviewRating.objects.filter(
+        product_id=single_product.id, 
+        status=True
+    ).select_related('user').order_by('-created_at')
     #get the product gallery here :
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
 
     context = {
         'single_product': single_product,
         'in_cart': in_cart,
-        'orderproduct':orderporduct,
+        'orderproduct':orderproduct,
         'reviews':reviews,
         'product_gallery':product_gallery
     }
@@ -102,6 +106,7 @@ def search(request):
 from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login')
+@never_cache
 def submit_review(request, product_id):
     url = request.META.get('HTTP_REFERER')
 
@@ -123,6 +128,9 @@ def submit_review(request, product_id):
                 review.review = cleaned_data.get('review', '')
                 review.save()
                 
+                # Clear cache for this product
+                cache.delete(f'product_detail_{product_id}')
+                
                 messages.success(request, f"Your review has been updated. Rating: {review.rating} stars")
             else:
                 messages.error(request, f"Invalid review data. Errors: {form.errors}")
@@ -138,11 +146,12 @@ def submit_review(request, product_id):
                 data.rating = float(data.rating)
                 
                 data.save()
+                
+                # Clear cache for this product
+                cache.delete(f'product_detail_{product_id}')
+                
                 messages.success(request, f"Your review has been submitted successfully! Rating: {data.rating} stars")
             else:
                 messages.error(request, f"Invalid review data. Errors: {form.errors}")
 
     return redirect(url or 'store')
-
-
-            
