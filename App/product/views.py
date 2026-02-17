@@ -61,7 +61,7 @@ def product_detail(request, category_slug, product_slug):
         status=True
     ).select_related('user').order_by('-created_at')
     #get the product gallery here :
-    product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
+    product_gallery = ProductGallery.objects.filter(product_id=single_product.id).select_related('product')
 
     context = {
         'single_product': single_product,
