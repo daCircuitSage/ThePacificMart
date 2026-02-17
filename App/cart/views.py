@@ -39,7 +39,7 @@ def merge_carts(user, session_key):
         user_cart = Cart.objects.create(cart_id=session_key)
     
     # Get all items from the anonymous cart
-    anonymous_cart_items = CartItems.objects.filter(cart=anonymous_cart)
+    anonymous_cart_items = CartItems.objects.filter(cart=anonymous_cart).select_related('product').prefetch_related('variations')
     
     for anon_item in anonymous_cart_items:
         # Get the variations for this anonymous item
@@ -49,7 +49,7 @@ def merge_carts(user, session_key):
         user_cart_items = CartItems.objects.filter(
             user=user,
             product=anon_item.product
-        )
+        ).select_related('product').prefetch_related('variations')
         
         item_found = False
         
@@ -120,11 +120,11 @@ def add_cart(request, product_id):
                 except:
                     pass
 
-        is_cart_item_exists = CartItems.objects.filter(product=product, user=current_user, cart=cart).exists()
+        is_cart_item_exists = CartItems.objects.filter(product=product, user=current_user, cart=cart).select_related('product', 'user', 'cart').prefetch_related('variations').exists()
         print(f"DEBUG: Cart item exists: {is_cart_item_exists}")
         
         if is_cart_item_exists:
-            cart_item = CartItems.objects.filter(product=product, user=current_user, cart=cart)
+            cart_item = CartItems.objects.filter(product=product, user=current_user, cart=cart).select_related('product', 'user', 'cart').prefetch_related('variations')
             ex_var_list = []
             id = []
             for item in cart_item:
@@ -187,11 +187,11 @@ def add_cart(request, product_id):
                 except:
                     pass
 
-        is_cart_item_exists = CartItems.objects.filter(product=product, cart=cart).exists()
+        is_cart_item_exists = CartItems.objects.filter(product=product, cart=cart).select_related('product', 'cart').prefetch_related('variations').exists()
         print(f"DEBUG: Cart item exists: {is_cart_item_exists}")
         
         if is_cart_item_exists:
-            cart_item = CartItems.objects.filter(product=product, cart=cart)
+            cart_item = CartItems.objects.filter(product=product, cart=cart).select_related('product', 'cart').prefetch_related('variations')
             # existing_variations -> database
             # current variation -> product_variation
             # item_id -> database
@@ -247,10 +247,10 @@ def remove_cart(request, product_id, cart_item_id):
     product = get_object_or_404(Product, id=product_id)
     try:
         if request.user.is_authenticated:
-            cart_item = CartItems.objects.get(product=product, user=request.user, id=cart_item_id)
+            cart_item = CartItems.objects.select_related('product', 'user').get(product=product, user=request.user, id=cart_item_id)
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))
-            cart_item = CartItems.objects.get(product=product, cart=cart, id=cart_item_id)
+            cart_item = CartItems.objects.select_related('product', 'cart').get(product=product, cart=cart, id=cart_item_id)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
@@ -264,10 +264,10 @@ def remove_cart(request, product_id, cart_item_id):
 def remove_cart_item(request, product_id, cart_item_id):
     product = get_object_or_404(Product, id=product_id)
     if request.user.is_authenticated:
-        cart_item = CartItems.objects.get(product=product, user=request.user, id=cart_item_id)
+        cart_item = CartItems.objects.select_related('product', 'user').get(product=product, user=request.user, id=cart_item_id)
     else:
         cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_item = CartItems.objects.get(product=product, cart=cart, id=cart_item_id)
+        cart_item = CartItems.objects.select_related('product', 'cart').get(product=product, cart=cart, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
 

@@ -222,7 +222,7 @@ def change_password(request):
 def order_detail(request, order_id):
     # order = get_object_or_404(Order, order_number=order_id) # VULNERABLE CODE: any user can access any order
     order = get_object_or_404(Order, order_number=order_id, user=request.user) # SECURE CODE: only the owner can access their order
-    order_items = OrderProduct.objects.filter(order=order)
+    order_items = OrderProduct.objects.filter(order=order).select_related('product', 'order').prefetch_related('variations')
     subtotal = sum(item.product_price * item.quantity for item in order_items)
     return render(request, 'accounts/order_detail.html', {
         'order': order,
