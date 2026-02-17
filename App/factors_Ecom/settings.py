@@ -189,21 +189,30 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend' # to mail
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # to console
 
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-# EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_PORT=587
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-# EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+# Use Gmail SMTP in both development and production
+if not DEBUG:
+    # Production settings - use Gmail SMTP
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+else:
+    # Development settings - same Gmail SMTP
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
 EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
+EMAIL_USE_SSL = False
 
-# Email timeout settings for Render
-# EMAIL_TIMEOUT = 10  # 10 seconds timeout
+# Email timeout settings for production
+EMAIL_TIMEOUT = 30  # 30 seconds timeout
+EMAIL_FAIL_SILENTLY = False  # Show errors for debugging
 
-# Email fallback for development and when email is not configured
-# if DEBUG or not EMAIL_HOST_USER:
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Email fallback for development
+if DEBUG and not EMAIL_HOST_USER:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ================= MESSAGE TAGS =================
 from django.contrib.messages import constants as messages
