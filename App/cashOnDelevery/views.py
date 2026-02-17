@@ -38,7 +38,7 @@ def cod_payment(request, order_number):
         order.is_ordered = True
         order.save()
 
-        cart_items = CartItems.objects.filter(user=request.user)
+        cart_items = CartItems.objects.filter(user=request.user, is_active=True).select_related('product').prefetch_related('variations')
         for item in cart_items:
             order_product = OrderProduct.objects.create(
                 order=order,
@@ -71,19 +71,14 @@ def cod_payment(request, order_number):
 
 def cod_order_complete(request):
     order_number = request.GET.get('order_number')
+    order = get_object_or_404(Order.objects.select_related('user', 'payment'), order_number=order_number, is_ordered=True)
+    order_products = OrderProduct.objects.filter(order=order).select_related('product').prefetch_related('variations')
 
-    order = get_object_or_404(
-        Order,
-        order_number=order_number,
-        is_ordered=True
-    )
-
-    order_products = OrderProduct.objects.filter(order=order)
+    subtotal = sum(item.product_price * item.quantity for item in order_products)
 
     context = {
         'order': order,
         'order_products': order_products,
-        'payment_method': 'Cash on Delivery',
+        'subtotal': subtotal
     }
-
     return render(request, 'orders/order_complete.html', context)
