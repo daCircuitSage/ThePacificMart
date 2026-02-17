@@ -20,11 +20,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # DEBUG = True
 
 # ================= HOST & CSRF =================
-# ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',') if host.strip()]
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
-# CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',') if origin.strip()]
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1,localhost:8001').split(',') if host.strip()]
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in config('CSRF_TRUSTED_ORIGINS', default='http://127.0.0.1:8001,http://localhost:8001').split(',') if origin.strip()]
 
 # Add default trusted origins for production
 # if not DEBUG and not CSRF_TRUSTED_ORIGINS:
@@ -102,17 +99,16 @@ DATABASES = {
     'default': dj_database_url.parse(
         config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
         conn_max_age=600,
-        # ssl_require=True  # Always require SSL for production databases
     )
 }
 
 # Additional database options for PostgreSQL
-# if 'postgresql' in config('DATABASE_URL', default=''):
-#     DATABASES['default'].update({
-#         'OPTIONS': {
-#             'sslmode': 'require',
-#         }
-#     })
+if 'postgresql' in config('DATABASE_URL', default=''):
+    DATABASES['default'].update({
+        'OPTIONS': {
+            'sslmode': 'require',
+        }
+    })
 
 # ================= AUTH =================
 AUTH_USER_MODEL = 'accounts.Account'
