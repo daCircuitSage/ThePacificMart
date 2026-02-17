@@ -31,18 +31,11 @@ fi
 
 echo ""
 echo "========== Collecting Static Files =========="
-python App/manage.py collectstatic --no-input
+python App/manage.py collectstatic --no-input --clear
 if [ $? -ne 0 ]; then
     echo "ERROR: collectstatic failed!"
     exit 1
 fi
-
-echo ""
-echo "========== Checking Database =========="
-python App/manage.py dbshell << EOF 2>&1 | head -1 || echo "Database connection OK"
-SELECT 1;
-\q
-EOF
 
 echo ""
 echo "========== Build Completed Successfully =========="

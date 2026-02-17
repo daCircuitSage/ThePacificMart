@@ -10,7 +10,7 @@ services:
     name: thepacificmart
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application --timeout 30 --workers 1 --max-requests 1000 --max-requests-jitter 50'
+    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application --bind 0.0.0.0:8001 --timeout 30 --workers 1 --max-requests 1000 --max-requests-jitter 50'
     
     envVars:
       - key: DATABASE_URL
