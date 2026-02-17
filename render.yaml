@@ -22,8 +22,17 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "pacific-mart.onrender.com,localhost,127.0.0.1"
+        value: "localhost,127.0.0.1"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://pacific-mart.onrender.com"
+        value: "http://localhost:8001,http://127.0.0.1:8001"
       - key: WEB_CONCURRENCY
         value: "1"
+      # Email Configuration - Use SendGrid (Render-compatible)
+      - key: EMAIL_HOST
+        value: "smtp.gmail.com"
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        value: "thepacificmart.user@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        value: "ogbp kosu jtza akwv"
