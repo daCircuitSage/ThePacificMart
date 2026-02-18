@@ -30,15 +30,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
-echo "========== Creating Superuser =========="
-echo "ADMIN_EMAIL: $ADMIN_EMAIL"
-echo "ADMIN_PASSWORD length: ${#ADMIN_PASSWORD}"
-python manage.py create_admin
-if [ $? -ne 0 ]; then
-    echo "WARNING: Superuser creation failed (may already exist)"
-else
-    echo "Superuser creation command executed"
-fi
+echo "========== Superuser Creation =========="
+echo "Superuser will be created automatically on application startup"
+echo "Using ADMIN_EMAIL: $ADMIN_EMAIL"
 
 echo ""
 echo "========== Collecting Static Files =========="

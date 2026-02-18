@@ -1,0 +1,1 @@
+# This file ensures Django apps are loaded when management commands are run
