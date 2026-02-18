@@ -30,6 +30,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
+echo "========== Creating Superuser =========="
+python App/manage.py create_admin
+if [ $? -ne 0 ]; then
+    echo "WARNING: Superuser creation failed (may already exist)"
+fi
+
+echo ""
 echo "========== Collecting Static Files =========="
 python App/manage.py collectstatic --no-input --clear
 if [ $? -ne 0 ]; then
