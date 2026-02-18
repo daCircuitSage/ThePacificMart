@@ -10,7 +10,7 @@ services:
     name: thepacificmart
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn factors_Ecom.wsgi:application --bind 0.0.0.0:8001 --timeout 30 --workers 1 --max-requests 1000 --max-requests-jitter 50'
+    startCommand: 'gunicorn factors_Ecom.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --timeout 30 --max-requests 1000 --max-requests-jitter 50'
     
     envVars:
       - key: DATABASE_URL
@@ -22,9 +22,9 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "localhost,127.0.0.1"
+        value: "thepacificmart.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
-        value: "http://localhost:8001,http://127.0.0.1:8001"
+        value: "https://thepacificmart.onrender.com"
       - key: WEB_CONCURRENCY
         value: "1"
       # Email Configuration - Use SendGrid (Render-compatible)
