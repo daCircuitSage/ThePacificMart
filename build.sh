@@ -15,7 +15,7 @@ fi
 
 echo ""
 echo "========== Creating Migrations =========="
-python App/manage.py makemigrations --no-input
+python manage.py makemigrations --no-input
 if [ $? -ne 0 ]; then
     echo "ERROR: makemigrations failed!"
     exit 1
@@ -23,7 +23,7 @@ fi
 
 echo ""
 echo "========== Running Migrations =========="
-python App/manage.py migrate --verbosity 2 --no-input
+python manage.py migrate --verbosity 2 --no-input
 if [ $? -ne 0 ]; then
     echo "ERROR: migrate failed!"
     exit 1
@@ -33,7 +33,7 @@ echo ""
 echo "========== Creating Superuser =========="
 echo "ADMIN_EMAIL: $ADMIN_EMAIL"
 echo "ADMIN_PASSWORD length: ${#ADMIN_PASSWORD}"
-python App/manage.py create_admin
+python manage.py create_admin
 if [ $? -ne 0 ]; then
     echo "WARNING: Superuser creation failed (may already exist)"
 else
@@ -42,7 +42,7 @@ fi
 
 echo ""
 echo "========== Collecting Static Files =========="
-python App/manage.py collectstatic --no-input --clear
+python manage.py collectstatic --no-input --clear
 if [ $? -ne 0 ]; then
     echo "ERROR: collectstatic failed!"
     exit 1

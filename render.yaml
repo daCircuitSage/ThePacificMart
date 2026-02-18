@@ -36,3 +36,14 @@ services:
         value: "thepacificmart.user@gmail.com"
       - key: EMAIL_HOST_PASSWORD
         value: "ogbp kosu jtza akwv"
+      # Admin user creation
+      - key: ADMIN_EMAIL
+        value: "admin@thepacificmart.com"
+      - key: ADMIN_PASSWORD
+        value: "SecureAdmin123!"
+      - key: ADMIN_USERNAME
+        value: "admin"
+      - key: ADMIN_FIRST_NAME
+        value: "Admin"
+      - key: ADMIN_LAST_NAME
+        value: "User"
