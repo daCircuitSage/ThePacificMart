@@ -56,13 +56,22 @@ class Command(BaseCommand):
                 username = f"{base_username}{counter}"
                 counter += 1
             
-            admin_user = User.objects.create_superuser(
+            admin_user = User.objects.create_user(
                 first_name=admin_first_name,
                 last_name=admin_last_name,
                 email=admin_email,
                 username=username,
                 password=admin_password
             )
+            
+            # Explicitly set all superuser fields
+            admin_user.is_admin = True
+            admin_user.is_active = True
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
+            admin_user.is_superadmin = True
+            admin_user.save(using=self._db)
+            
             self.stdout.write(
                 self.style.SUCCESS(f'Successfully created admin user: {admin_email} with username: {username}')
             )
