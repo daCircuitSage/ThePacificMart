@@ -32,6 +32,7 @@ class MyAccountManager(BaseUserManager):
         user.is_admin = True
         user.is_active = True
         user.is_staff = True
+        user.is_superuser = True  # This was missing!
         user.is_superadmin = True
         user.save(using=self._db)
         return user
