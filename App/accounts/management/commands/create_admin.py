@@ -48,15 +48,23 @@ class Command(BaseCommand):
 
         # Create new superuser
         try:
+            # Generate unique username
+            base_username = admin_email.split('@')[0]
+            username = base_username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            
             admin_user = User.objects.create_superuser(
                 first_name=admin_first_name,
                 last_name=admin_last_name,
                 email=admin_email,
-                username=admin_email.split('@')[0],
+                username=username,
                 password=admin_password
             )
             self.stdout.write(
-                self.style.SUCCESS(f'Successfully created admin user: {admin_email}')
+                self.style.SUCCESS(f'Successfully created admin user: {admin_email} with username: {username}')
             )
         except Exception as e:
             self.stdout.write(

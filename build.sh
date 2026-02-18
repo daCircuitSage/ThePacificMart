@@ -31,9 +31,13 @@ fi
 
 echo ""
 echo "========== Creating Superuser =========="
+echo "ADMIN_EMAIL: $ADMIN_EMAIL"
+echo "ADMIN_PASSWORD length: ${#ADMIN_PASSWORD}"
 python App/manage.py create_admin
 if [ $? -ne 0 ]; then
     echo "WARNING: Superuser creation failed (may already exist)"
+else
+    echo "Superuser creation command executed"
 fi
 
 echo ""
